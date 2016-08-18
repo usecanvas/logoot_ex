@@ -27,6 +27,7 @@ defmodule Logoot.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [{:dialyxir, "~> 0.3.5", only: [:dev]},
+     {:ex_doc, "> 0.0.0", only: [:dev]}]
   end
 end
