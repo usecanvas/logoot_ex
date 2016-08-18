@@ -2,6 +2,12 @@ defmodule Logoot.Agent do
   @moduledoc """
   A GenServer which is responsible for storing the state of a vector clock for
   use in generating `Logoot.Sequence.position_ident`s.
+
+      iex> {:ok, agent} = Logoot.Agent.start_link
+      iex> Logoot.Agent.get_vector(agent)
+      0
+      iex> Logoot.Agent.get_vector(agent)
+      1
   """
 
   use GenServer

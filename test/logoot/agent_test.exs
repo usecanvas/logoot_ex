@@ -1,5 +1,6 @@
 defmodule Logoot.AgentTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
+  doctest Logoot.Agent
 
   setup do
     {:ok, agent} = Logoot.Agent.start_link
