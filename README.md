@@ -158,3 +158,9 @@ may be an excellent option for a sequence CRDT. The
 is a relatively easy read, and you may also want to look at this project's
 [Logoot.Sequence module](https://github.com/usecanvas/logoot_ex/blob/master/lib/logoot/sequence.ex)
 and its [tests](https://github.com/usecanvas/logoot_ex/blob/master/test/logoot/sequence_test.exs).
+
+## TODO
+
+- [ ] Make min and max implicit, do not force user to provide them.
+- [ ] Prevent deleting min and max atoms.
+- [ ] Make idempotent insert atom and delete atom functions.
