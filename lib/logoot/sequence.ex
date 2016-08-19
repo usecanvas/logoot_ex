@@ -102,7 +102,8 @@ defmodule Logoot.Sequence do
   @doc """
   Insert a value into a sequence after the given atom identifier.
 
-  Returns a tuple containing the new atom and the updated sequence.
+  Returns a tuple containing `{:ok, {new_atom, updated_sequence}}` or
+  `{:error, message}`.
   """
   @spec get_and_insert_after(t, atom_ident, term, Logoot.Agent.t) ::
         {:ok, {sequence_atom, t}} | {:error, String.t}
