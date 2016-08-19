@@ -1,7 +1,8 @@
 # Logoot
 
 An Elixir implementation of the
-[Logoot CRDT](https://hal.archives-ouvertes.fr/inria-00432368/document).
+[Logoot CRDT](https://hal.archives-ouvertes.fr/inria-00432368/document). **This
+is a work-in-progress and is not battle-tested.**
 
 ## Installation
 
