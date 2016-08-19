@@ -65,7 +65,8 @@ defmodule Logoot.AgentTest do
       agent_b.sequence
       |> Enum.map(&({agent_a_pid, &1}))
 
-    agent_a_sequence ++ agent_b_sequence
+    (agent_a_sequence ++ agent_b_sequence)
+    |> Enum.shuffle
     |> Enum.each(fn {pid, atom} ->
       Logoot.Agent.insert_atom(pid, atom)
     end)
