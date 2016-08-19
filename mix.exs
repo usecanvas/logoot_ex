@@ -1,9 +1,16 @@
 defmodule Logoot.Mixfile do
   use Mix.Project
 
+  @version "1.0.0"
+
   def project do
     [app: :logoot,
-     version: "0.1.0",
+     description: "An implementation of the Logoot CRDT",
+     package: package,
+     docs: docs,
+     source_url: "https://github.com/usecanvas/logoot_ex",
+     homepage_url: "https://github.com/usecanvas/logoot_ex",
+     version: @version,
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -31,5 +38,15 @@ defmodule Logoot.Mixfile do
     [{:uuid, "~> 1.1"},
      {:dialyxir, "~> 0.3.5", only: [:dev]},
      {:ex_doc, "> 0.0.0", only: [:dev]}]
+  end
+
+  defp package do
+    [maintainers: ["Jonathan Clem <jonathan@usecanvas.com>"],
+     licenses: ["MIT"],
+     links: %{github: "https://github.com/usecanvas/logoot_ex"}]
+  end
+
+  defp docs do
+    [source_ref: "v#{@version}", main: "README.md"]
   end
 end
