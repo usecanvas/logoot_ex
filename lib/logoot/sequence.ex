@@ -149,6 +149,16 @@ defmodule Logoot.Sequence do
     end
   end
 
+  @doc """
+  Return only the values from the sequence.
+  """
+  @spec get_values(t) :: [term]
+  def get_values(sequence) do
+    sequence
+    |> Enum.slice(1..-2)
+    |> Enum.map(&(elem(&1, 1)))
+  end
+
   # Compare two positions.
   @spec compare_positions(position, position) :: comparison
   defp compare_positions([], []), do: :eq

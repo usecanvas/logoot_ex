@@ -144,4 +144,21 @@ defmodule Logoot.SequenceTest do
       assert sequence == [{Sequence.min, nil}, {Sequence.max, nil}]
     end
   end
+
+  test ".values gets the values without min and max", %{agent: agent} do
+    min = Sequence.min
+    max = Sequence.max
+    foo = {elem(Sequence.gen_atom_ident(agent, min, max), 1), "Foo"}
+    bar = {elem(Sequence.gen_atom_ident(agent, elem(foo, 0), max), 1), "Bar"}
+
+    values =
+      Sequence.empty_sequence
+      |> Sequence.insert_atom(foo)
+      |> elem(1)
+      |> Sequence.insert_atom(bar)
+      |> elem(1)
+      |> Sequence.get_values
+
+    assert values == ["Foo", "Bar"]
+  end
 end
