@@ -113,7 +113,7 @@ this:
 [
   {{[{0, 0}]}, nil},    # Minimum sequence atom
   {{[{1, 1}, {3, 2}], 5}, "Hello, world from site 2!"},
-  {{[{1, 1}, {5, 4}], 1}, "I came from site 4!"}
+  {{[{1, 1}, {5, 4}], 1}, "I came from site 4!"},
   {{[{32767, 0}]}, nil} # Maximum sequence atom
 ]
 ```
@@ -125,6 +125,18 @@ position is `{1, 1}`, Logoot can not insert an identifier directly between them,
 so it moves on to the next pair, `{3, 2}` and `{5, 4}`. Because site 3's
 site identifier is greater than site 2's, it can insert the identifier `{3, 3}`
 here and preserve ordering, since `{3, 2} < {3, 3} < {5, 4}`.
+
+The resulting sequence would be (assuming 3's vector clock is at `1`):
+
+```elixir
+[
+  {{[{0, 0}]}, nil},    # Minimum sequence atom
+  {{[{1, 1}, {3, 2}], 5}, "Hello, world from site 2!"},
+  {{[{1, 1}, {3, 3}], 1}, "Hello from site 3!"},
+  {{[{1, 1}, {5, 4}], 1}, "I came from site 4!"},
+  {{[{32767, 0}]}, nil} # Maximum sequence atom
+]
+```
 
 Note that if this were actually site `1`, things would be different, because
 `{3, 2}` is not less than `{3, 1}`. Instead, Logoot generates a random integer
