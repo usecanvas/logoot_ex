@@ -1,7 +1,7 @@
 defmodule Logoot.Mixfile do
   use Mix.Project
 
-  @version "1.0.1"
+  @version "1.0.2"
 
   def project do
     [app: :logoot,
@@ -49,7 +49,7 @@ defmodule Logoot.Mixfile do
 
   defp docs do
     [source_ref: "v#{@version}",
-     main: "README",
+     main: "readme",
      extras: ~w(README.md LICENSE.md)]
   end
 end
