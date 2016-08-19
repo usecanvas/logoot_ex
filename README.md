@@ -11,19 +11,15 @@ as:
 
   1. Add `logoot` to your list of dependencies in `mix.exs`:
 
-    ```elixir
-    def deps do
-      [{:logoot, "~> 0.1.0"}]
-    end
-    ```
+        def deps do
+          [{:logoot, "~> 0.1.0"}]
+        end
 
   2. Ensure `logoot` is started before your application:
 
-    ```elixir
-    def application do
-      [applications: [:logoot]]
-    end
-    ```
+        def application do
+          [applications: [:logoot]]
+        end
 
 ## What is Logoot?
 
