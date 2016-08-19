@@ -4,9 +4,7 @@ defmodule Logoot.Agent do
   vector clock for use in generating `Logoot.Sequence.position_ident`s.
 
       iex> {:ok, agent} = Logoot.Agent.start_link
-      iex> Logoot.Agent.get_clock(agent)
-      0
-      iex> Logoot.Agent.tick_clock(agent)
+      iex> Logoot.Agent.tick_clock(agent).clock
       1
   """
 
@@ -27,12 +25,6 @@ defmodule Logoot.Agent do
   end
 
   @doc """
-  Get the current value of an agent's clock.
-  """
-  @spec get_clock(pid) :: non_neg_integer
-  def get_clock(pid), do: GenServer.call(pid, :get_clock)
-
-  @doc """
   Get the current state of the agent (ID and clock).
   """
   @spec get_state(pid) :: t
@@ -41,7 +33,7 @@ defmodule Logoot.Agent do
   @doc """
   Increment the agent's clock by 1.
   """
-  @spec tick_clock(pid) :: pos_integer
+  @spec tick_clock(pid) :: t
   def tick_clock(pid), do: GenServer.call(pid, :tick_clock)
 
   # Generate a unique agent ID.
@@ -50,16 +42,12 @@ defmodule Logoot.Agent do
 
   # Server
 
-  def handle_call(:get_clock, _from, agent) do
-    {:reply, agent.clock, agent}
-  end
-
   def handle_call(:get_state, _from, agent) do
     {:reply, agent, agent}
   end
 
   def handle_call(:tick_clock, _from, agent) do
-    clock_value = agent.clock + 1
-    {:reply, clock_value, agent |> Map.put(:clock, clock_value)}
+    agent = agent |> Map.put(:clock, agent.clock + 1)
+    {:reply, agent, agent}
   end
 end
