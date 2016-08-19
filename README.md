@@ -50,6 +50,11 @@ understand this, here are a few definitions to start with:
   atom and a maximum sequence atom. All other atoms in the sequence are created
   somewhere between these two.
 
+Because of how these atom identifiers are structured, they are *totally
+ordered*, as opposed to *causally ordered*. No identifier cares about the
+identifier before it once it's been created, and so **tombstones are not
+necessary**.
+
 ### Generating a Sequence Atom
 
 *For the purposes of readability, I'm going to represent sequences in this
