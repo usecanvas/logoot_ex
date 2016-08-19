@@ -21,7 +21,7 @@ defmodule Logoot.Agent do
   """
   @spec start_link :: GenServer.on_start
   def start_link do
-    GenServer.start_link(__MODULE__, %__MODULE__{id: gen_id, clock: 0})
+    GenServer.start_link(__MODULE__, %__MODULE__{id: gen_id})
   end
 
   @doc """
