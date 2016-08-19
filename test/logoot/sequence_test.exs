@@ -89,4 +89,15 @@ defmodule Logoot.SequenceTest do
       assert sequence == [{Sequence.min, nil}, atom, {Sequence.max, nil}]
     end
   end
+
+  test ".delete_atom deletes the given atom", %{agent: agent} do
+    sequence = [{Sequence.min, nil}, {Sequence.max, nil}]
+
+    {atom, sequence} =
+      sequence
+      |> Sequence.get_and_insert_after(Sequence.min, "Hello, World!", agent)
+
+    sequence = sequence |> Sequence.delete_atom(atom)
+    assert sequence == [{Sequence.min, nil}, {Sequence.max, nil}]
+  end
 end

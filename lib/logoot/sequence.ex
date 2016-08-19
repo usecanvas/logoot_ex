@@ -86,6 +86,13 @@ defmodule Logoot.Sequence do
   end
 
   @doc """
+  Delete the given atom from the sequence.
+  """
+  @spec delete_atom(t, sequence_atom) :: t
+  def delete_atom([atom | tail], atom), do: tail
+  def delete_atom([head | tail], atom), do: [head | delete_atom(tail, atom)]
+
+  @doc """
   Insert a value into a sequence after the given atom identifier.
 
   Returns a tuple containing the new atom and the updated sequence.
