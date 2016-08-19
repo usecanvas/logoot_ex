@@ -1,18 +1,16 @@
 defmodule Logoot.Agent do
   @moduledoc """
-  A GenServer which is responsible for storing a unique ID and the state of a
-  vector clock for use in generating `Logoot.Sequence.position_ident`s.
-
-      iex> {:ok, agent} = Logoot.Agent.start_link
-      iex> Logoot.Agent.tick_clock(agent).clock
-      1
+  A GenServer which is represents a site at which a Logoot sequence is stored.
+  The site has a unique copy of the sequence, a unique ID, and a vector clock.
   """
 
   use GenServer
 
-  defstruct id: "", clock: 0
+  defstruct id: "", clock: 0, sequence: Logoot.Sequence.empty_sequence
 
-  @type t :: %__MODULE__{id: String.t, clock: non_neg_integer}
+  @type t :: %__MODULE__{id: String.t,
+                         clock: non_neg_integer,
+                         sequence: Logoot.Sequence.t}
 
   # Client
 
@@ -36,9 +34,20 @@ defmodule Logoot.Agent do
   @spec tick_clock(pid) :: t
   def tick_clock(pid), do: GenServer.call(pid, :tick_clock)
 
+  @doc """
+  Insert an atom into the site's sequence.
+  """
+  @spec insert_atom(pid, Logoot.Sequence.sequence_atom) ::
+    {:ok, Logoot.Sequence.t} | {:error, String.t}
+  def insert_atom(pid, atom), do: GenServer.call(pid, {:insert_atom, atom})
+
   # Generate a unique agent ID.
   @spec gen_id :: String.t
   defp gen_id, do: UUID.uuid4(:hex)
+
+  # Tick an agent's clock by 1.
+  @spec do_tick_clock(t) :: t
+  defp do_tick_clock(agent), do: Map.put(agent, :clock, agent.clock + 1)
 
   # Server
 
@@ -46,8 +55,16 @@ defmodule Logoot.Agent do
     {:reply, agent, agent}
   end
 
+  def handle_call({:insert_atom, atom}, _from, agent) do
+    case Logoot.Sequence.insert_atom(agent.sequence, atom) do
+      error = {:error, _} -> {:reply, error, agent}
+      {:ok, sequence} ->
+        {:reply, {:ok, sequence}, Map.put(agent, :sequence, sequence)}
+    end
+  end
+
   def handle_call(:tick_clock, _from, agent) do
-    agent = agent |> Map.put(:clock, agent.clock + 1)
+    agent = do_tick_clock(agent)
     {:reply, agent, agent}
   end
 end

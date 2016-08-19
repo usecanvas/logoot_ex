@@ -104,9 +104,9 @@ defmodule Logoot.Sequence do
 
   Returns a tuple containing the new atom and the updated sequence.
   """
-  @spec get_and_insert_after(t, atom_ident, term, pid) ::
+  @spec get_and_insert_after(t, atom_ident, term, Logoot.Agent.t) ::
         {:ok, {sequence_atom, t}} | {:error, String.t}
-  def get_and_insert_after(sequence, prev_sibling_ident, value, agent_pid) do
+  def get_and_insert_after(sequence, prev_sibling_ident, value, agent) do
     prev_sibling_index =
       Enum.find_index(sequence, fn {atom_ident, _} ->
         atom_ident == prev_sibling_ident
@@ -114,7 +114,7 @@ defmodule Logoot.Sequence do
 
     {next_sibling_ident, _} = Enum.at(sequence, prev_sibling_index + 1)
 
-    case gen_atom_ident(agent_pid, prev_sibling_ident, next_sibling_ident) do
+    case gen_atom_ident(agent, prev_sibling_ident, next_sibling_ident) do
       error = {:error, _} -> error
       {:ok, atom_ident} ->
         new_atom = {atom_ident, value}
@@ -150,6 +150,20 @@ defmodule Logoot.Sequence do
   end
 
   @doc """
+  Generate an atom identifier between `min` and `max`.
+  """
+  @spec gen_atom_ident(Logoot.Agent.t, atom_ident, atom_ident) ::
+        {:ok, atom_ident} | {:error, String.t}
+  def gen_atom_ident(agent, min_atom_ident, max_atom_ident) do
+    case gen_position(agent.id,
+                      elem(min_atom_ident, 0),
+                      elem(max_atom_ident, 0)) do
+      error = {:error, _} -> error
+      atom_ident          -> {:ok, {atom_ident, agent.clock}}
+    end
+  end
+
+  @doc """
   Return only the values from the sequence.
   """
   @spec get_values(t) :: [term]
@@ -170,22 +184,6 @@ defmodule Logoot.Sequence do
       :gt -> :gt
       :lt -> :lt
       :eq -> compare_positions(tail_a, tail_b)
-    end
-  end
-
-  @doc """
-  Generate an atom identifier between `min` and `max`.
-  """
-  @spec gen_atom_ident(pid, atom_ident, atom_ident) ::
-        {:ok, atom_ident} | {:error, String.t}
-  def gen_atom_ident(agent_pid, min_atom_ident, max_atom_ident) do
-    agent = Logoot.Agent.tick_clock(agent_pid)
-
-    case gen_position(agent.id,
-                      elem(min_atom_ident, 0),
-                      elem(max_atom_ident, 0)) do
-      error = {:error, _} -> error
-      atom_ident          -> {:ok, {atom_ident, agent.clock}}
     end
   end
 
