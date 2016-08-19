@@ -60,7 +60,7 @@ defmodule Logoot.SequenceTest do
 
   describe ".get_atom_ident" do
     test "returns a valid atom_ident between abs min and max", %{agent: agent} do
-      atom_ident =
+      {:ok, atom_ident} =
         Sequence.gen_atom_ident(agent, Sequence.min, Sequence.max)
       assert(
         Sequence.compare_atom_idents(atom_ident, Sequence.min) == :gt)
@@ -71,7 +71,7 @@ defmodule Logoot.SequenceTest do
     test "returns a valid atom_ident between min and max", %{agent: agent} do
       min = {[{1, 1}, {1, 3}, {1, 4}], 39}
       max = {[{1, 1}, {1, 3}, {1, 4}, {3, 5}], 542}
-      atom_ident =
+      {:ok, atom_ident} =
         Sequence.gen_atom_ident(agent, min, max)
       assert(Sequence.compare_atom_idents(atom_ident, min) == :gt)
       assert(Sequence.compare_atom_idents(atom_ident, max) == :lt)
@@ -82,7 +82,7 @@ defmodule Logoot.SequenceTest do
     test "inserts data after the given atom identifier", %{agent: agent} do
       sequence = [{Sequence.min, nil}, {Sequence.max, nil}]
 
-      {atom, sequence} =
+      {:ok, {atom, sequence}} =
         sequence
         |> Sequence.get_and_insert_after(Sequence.min, "Hello, World!", agent)
 
@@ -90,14 +90,16 @@ defmodule Logoot.SequenceTest do
     end
   end
 
-  test ".delete_atom deletes the given atom", %{agent: agent} do
-    sequence = [{Sequence.min, nil}, {Sequence.max, nil}]
+  describe ".delete_atom" do
+    test "deletes the given atom", %{agent: agent} do
+      sequence = [{Sequence.min, nil}, {Sequence.max, nil}]
 
-    {atom, sequence} =
-      sequence
-      |> Sequence.get_and_insert_after(Sequence.min, "Hello, World!", agent)
+      {:ok, {atom, sequence}} =
+        sequence
+        |> Sequence.get_and_insert_after(Sequence.min, "Hello, World!", agent)
 
-    sequence = sequence |> Sequence.delete_atom(atom)
-    assert sequence == [{Sequence.min, nil}, {Sequence.max, nil}]
+      sequence = sequence |> Sequence.delete_atom(atom)
+      assert sequence == [{Sequence.min, nil}, {Sequence.max, nil}]
+    end
   end
 end

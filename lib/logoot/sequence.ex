@@ -55,12 +55,12 @@ defmodule Logoot.Sequence do
   @typedoc """
   A `sequence_atom` that represents the beginning of any `Logoot.Sequence.t`.
   """
-  @type abs_min_atom_ident :: {[{0, 0}], 0}
+  @type abs_min_atom_ident :: {nonempty_list({0, 0}), 0}
 
   @typedoc """
   A `sequence_atom` that represents the end of any `Logoot.Sequence.t`.
   """
-  @type abs_max_atom_ident :: {[{32767, 0}], 1}
+  @type abs_max_atom_ident :: {nonempty_list({32767, 0}), 1}
 
   @doc """
   Get the minimum sequence atom.
@@ -97,7 +97,8 @@ defmodule Logoot.Sequence do
 
   Returns a tuple containing the new atom and the updated sequence.
   """
-  @spec get_and_insert_after(t, atom_ident, term, pid) :: {sequence_atom, t}
+  @spec get_and_insert_after(t, atom_ident, term, pid) ::
+        {:ok, {sequence_atom, t}} | {:error, String.t}
   def get_and_insert_after(sequence, prev_sibling_ident, value, agent_pid) do
     prev_sibling_index =
       Enum.find_index(sequence, fn {atom_ident, _} ->
@@ -106,12 +107,14 @@ defmodule Logoot.Sequence do
 
     {next_sibling_ident, _} = Enum.at(sequence, prev_sibling_index + 1)
 
-    atom_ident =
-      gen_atom_ident(agent_pid, prev_sibling_ident, next_sibling_ident)
-    new_atom = {atom_ident, value}
+    case gen_atom_ident(agent_pid, prev_sibling_ident, next_sibling_ident) do
+      error = {:error, _} -> error
+      atom_ident ->
+        new_atom = {atom_ident, value}
 
-    {new_atom,
-     List.insert_at(sequence, prev_sibling_index + 1, new_atom)}
+        {:ok,
+         {new_atom, List.insert_at(sequence, prev_sibling_index + 1, new_atom)}}
+    end
   end
 
   # Compare two positions.
@@ -132,16 +135,21 @@ defmodule Logoot.Sequence do
   Generate an atom identifier between `min` and `max`.
   """
   @spec gen_atom_ident(pid, atom_ident, atom_ident) ::
-        atom_ident
+        {:ok, atom_ident} | {:error, String.t}
   def gen_atom_ident(agent_pid, min_atom_ident, max_atom_ident) do
     agent = Logoot.Agent.tick_clock(agent_pid)
-    atom_ident =
-      gen_position(agent.id, elem(min_atom_ident, 0), elem(max_atom_ident, 0))
-    {atom_ident, agent.clock}
+
+    case gen_position(agent.id,
+                      elem(min_atom_ident, 0),
+                      elem(max_atom_ident, 0)) do
+      error = {:error, _} -> error
+      atom_ident          -> {:ok, {atom_ident, agent.clock}}
+    end
   end
 
   # Generate a position from an agent ID, min, and max
-  @spec gen_position(String.t, position, position) :: position
+  @spec gen_position(String.t, position, position) ::
+        nonempty_list(ident) | {:error, String.t}
   defp gen_position(agent_id, min_position, max_position) do
     {min_head, min_tail} = get_logical_head_tail(min_position, :min)
     {max_head, max_tail} = get_logical_head_tail(max_position, :max)
@@ -161,17 +169,19 @@ defmodule Logoot.Sequence do
         end
       :eq ->
         [min_head | gen_position(agent_id, min_tail, max_tail)]
+      :gt ->
+        {:error, "Max atom was lesser than min atom"}
     end
   end
 
   # Get the logical min or max head and tail.
-  @spec get_logical_head_tail(position, :min) :: {ident, position}
+  @spec get_logical_head_tail(position, :min | :max) :: {ident, position}
   defp get_logical_head_tail([], :min), do: {Enum.at(elem(min, 0), 0), []}
   defp get_logical_head_tail([], :max), do: {Enum.at(elem(max, 0), 0), []}
   defp get_logical_head_tail(position, _), do: {hd(position), tl(position)}
 
   # Generate a random int between two ints.
-  @spec random_int_between(non_neg_integer, pos_integer) :: pos_integer
+  @spec random_int_between(0..32767, 1..32767) :: 1..32766
   defp random_int_between(min, max) do
     :rand.uniform(max - min - 1) + min
   end
