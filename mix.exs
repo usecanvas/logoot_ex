@@ -1,7 +1,7 @@
 defmodule Logoot.Mixfile do
   use Mix.Project
 
-  @version "1.0.0"
+  @version "1.0.1"
 
   def project do
     [app: :logoot,
@@ -43,10 +43,13 @@ defmodule Logoot.Mixfile do
   defp package do
     [maintainers: ["Jonathan Clem <jonathan@usecanvas.com>"],
      licenses: ["MIT"],
-     links: %{github: "https://github.com/usecanvas/logoot_ex"}]
+     links: %{GitHub: "https://github.com/usecanvas/logoot_ex"},
+     files: ~w(lib mix.exs LICENSE.md README.md)]
   end
 
   defp docs do
-    [source_ref: "v#{@version}", main: "README.md"]
+    [source_ref: "v#{@version}",
+     main: "README",
+     extras: ~w(README.md LICENSE.md)]
   end
 end
