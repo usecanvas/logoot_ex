@@ -77,7 +77,7 @@ paper recommends it). One wouldn't want to choose an integer greater than any
 implementation's maximum safe integer value, and all implementations that
 communicate with one another must share this same maximum.*
 
-Now, a user at site `1` inserts the first line into his local copy of the
+Now, a user at site `1` inserts the first line into their local copy of the
 document:
 
 ```elixir
