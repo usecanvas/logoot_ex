@@ -144,6 +144,8 @@ defmodule Logoot.Sequence do
         end
       {:lt, :gt} ->
         {:error, "Sequence out of order"}
+      {:eq, _} ->
+        {:ok, list}
       {_, :eq} ->
         {:ok, list}
     end
