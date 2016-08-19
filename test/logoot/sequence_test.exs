@@ -77,4 +77,16 @@ defmodule Logoot.SequenceTest do
       assert(Sequence.compare_atom_idents(atom_ident, max) == :lt)
     end
   end
+
+  describe ".get_and_insert_after" do
+    test "inserts data after the given atom identifier", %{agent: agent} do
+      sequence = [{Sequence.min, nil}, {Sequence.max, nil}]
+
+      {atom, sequence} =
+        sequence
+        |> Sequence.get_and_insert_after(Sequence.min, "Hello, World!", agent)
+
+      assert sequence == [{Sequence.min, nil}, atom, {Sequence.max, nil}]
+    end
+  end
 end

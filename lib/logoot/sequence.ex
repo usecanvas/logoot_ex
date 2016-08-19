@@ -85,6 +85,28 @@ defmodule Logoot.Sequence do
     compare_positions(elem(atom_ident_a, 0), elem(atom_ident_b, 0))
   end
 
+  @doc """
+  Insert a value into a sequence after the given atom identifier.
+
+  Returns a tuple containing the new atom and the updated sequence.
+  """
+  @spec get_and_insert_after(t, atom_ident, term, pid) :: {sequence_atom, t}
+  def get_and_insert_after(sequence, prev_sibling_ident, value, agent_pid) do
+    prev_sibling_index =
+      Enum.find_index(sequence, fn {atom_ident, _} ->
+        atom_ident == prev_sibling_ident
+      end)
+
+    {next_sibling_ident, _} = Enum.at(sequence, prev_sibling_index + 1)
+
+    atom_ident =
+      gen_atom_ident(agent_pid, prev_sibling_ident, next_sibling_ident)
+    new_atom = {atom_ident, value}
+
+    {new_atom,
+     List.insert_at(sequence, prev_sibling_index + 1, new_atom)}
+  end
+
   # Compare two positions.
   @spec compare_positions(position, position) :: comparison
   defp compare_positions([], []), do: :eq
