@@ -80,7 +80,7 @@ defmodule Logoot.SequenceTest do
 
   describe ".get_and_insert_after" do
     test "inserts data after the given atom identifier", %{agent: agent} do
-      sequence = [{Sequence.min, nil}, {Sequence.max, nil}]
+      sequence = Sequence.empty_sequence
 
       {:ok, {atom, sequence}} =
         sequence
@@ -106,7 +106,7 @@ defmodule Logoot.SequenceTest do
     test "inserts idempotently", %{agent: agent} do
       min = Sequence.min
       max = Sequence.max
-      sequence = [{min, nil}, {max, nil}]
+      sequence = Sequence.empty_sequence
       {:ok, atom_ident} = Sequence.gen_atom_ident(agent, min, max)
       atom = {atom_ident, "Bar"}
       {:ok, sequence} =
@@ -119,7 +119,7 @@ defmodule Logoot.SequenceTest do
 
   describe ".delete_atom" do
     test "is idempotent", %{agent: agent} do
-      sequence = [{Sequence.min, nil}, {Sequence.max, nil}]
+      sequence = Sequence.empty_sequence
 
       {:ok, {atom, sequence}} =
         sequence
@@ -134,7 +134,7 @@ defmodule Logoot.SequenceTest do
     end
 
     test "deletes the given atom", %{agent: agent} do
-      sequence = [{Sequence.min, nil}, {Sequence.max, nil}]
+      sequence = Sequence.empty_sequence
 
       {:ok, {atom, sequence}} =
         sequence

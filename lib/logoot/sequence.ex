@@ -94,6 +94,12 @@ defmodule Logoot.Sequence do
   def delete_atom([], _atom), do: []
 
   @doc """
+  Get the empty sequence.
+  """
+  @spec empty_sequence :: [{abs_min_atom_ident | abs_max_atom_ident, nil}]
+  def empty_sequence, do: [{min, nil}, {max, nil}]
+
+  @doc """
   Insert a value into a sequence after the given atom identifier.
 
   Returns a tuple containing the new atom and the updated sequence.
