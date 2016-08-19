@@ -118,6 +118,31 @@ defmodule Logoot.Sequence do
     end
   end
 
+  @doc """
+  Insert the given atom into the sequence.
+  """
+  @spec insert_atom(t, sequence_atom) :: {:ok, t} | {:error, String.t}
+  def insert_atom(list = [prev | tail = [next | _]], atom) do
+    {{prev_position, _}, _} = prev
+    {{next_position, _}, _} = next
+    {{position, _}, _} = atom
+
+    case {compare_positions(position, prev_position),
+          compare_positions(position, next_position)} do
+      {:gt, :lt} ->
+        {:ok, [prev | [atom | tail]]}
+      {:gt, :gt} ->
+        case insert_atom(tail, atom) do
+          error = {:error, _} -> error
+          {:ok, tail} -> {:ok, [prev | tail]}
+        end
+      {:lt, :gt} ->
+        {:error, "Sequence out of order"}
+      {_, :eq} ->
+        {:ok, list}
+    end
+  end
+
   # Compare two positions.
   @spec compare_positions(position, position) :: comparison
   defp compare_positions([], []), do: :eq

@@ -90,6 +90,33 @@ defmodule Logoot.SequenceTest do
     end
   end
 
+  describe ".insert_atom" do
+    test "inserts an atom into its proper position", %{agent: agent} do
+      min = Sequence.min
+      max = Sequence.max
+      mid = {elem(Sequence.gen_atom_ident(agent, min, max), 1), "Foo"}
+      sequence = [{min, nil}, mid, {max, nil}]
+      {:ok, atom_ident} = Sequence.gen_atom_ident(agent, elem(mid, 0), max)
+      atom = {atom_ident, "Bar"}
+      {:ok, sequence} =
+        Sequence.insert_atom(sequence, atom)
+      assert sequence == [{min, nil}, mid, atom, {max, nil}]
+    end
+
+    test "inserts idempotently", %{agent: agent} do
+      min = Sequence.min
+      max = Sequence.max
+      sequence = [{min, nil}, {max, nil}]
+      {:ok, atom_ident} = Sequence.gen_atom_ident(agent, min, max)
+      atom = {atom_ident, "Bar"}
+      {:ok, sequence} =
+        Sequence.insert_atom(sequence, atom)
+      {:ok, sequence} =
+        Sequence.insert_atom(sequence, atom)
+      assert sequence == [{min, nil}, atom, {max, nil}]
+    end
+  end
+
   describe ".delete_atom" do
     test "is idempotent", %{agent: agent} do
       sequence = [{Sequence.min, nil}, {Sequence.max, nil}]
