@@ -163,4 +163,5 @@ and its [tests](https://github.com/usecanvas/logoot_ex/blob/master/test/logoot/s
 
 - [ ] Make min and max implicit, do not force user to provide them.
 - [ ] Prevent deleting min and max atoms.
-- [ ] Make idempotent insert atom and delete atom functions.
+- [ ] Make idempotent insert atom function.
+- [x] Make idempotent delete atom function.

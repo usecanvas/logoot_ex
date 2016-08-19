@@ -91,6 +91,21 @@ defmodule Logoot.SequenceTest do
   end
 
   describe ".delete_atom" do
+    test "is idempotent", %{agent: agent} do
+      sequence = [{Sequence.min, nil}, {Sequence.max, nil}]
+
+      {:ok, {atom, sequence}} =
+        sequence
+        |> Sequence.get_and_insert_after(Sequence.min, "Hello, World!", agent)
+
+      sequence =
+        sequence
+        |> Sequence.delete_atom(atom)
+        |> Sequence.delete_atom(atom)
+
+      assert sequence == [{Sequence.min, nil}, {Sequence.max, nil}]
+    end
+
     test "deletes the given atom", %{agent: agent} do
       sequence = [{Sequence.min, nil}, {Sequence.max, nil}]
 

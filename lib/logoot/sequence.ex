@@ -91,6 +91,7 @@ defmodule Logoot.Sequence do
   @spec delete_atom(t, sequence_atom) :: t
   def delete_atom([atom | tail], atom), do: tail
   def delete_atom([head | tail], atom), do: [head | delete_atom(tail, atom)]
+  def delete_atom([], _atom), do: []
 
   @doc """
   Insert a value into a sequence after the given atom identifier.
@@ -109,7 +110,7 @@ defmodule Logoot.Sequence do
 
     case gen_atom_ident(agent_pid, prev_sibling_ident, next_sibling_ident) do
       error = {:error, _} -> error
-      atom_ident ->
+      {:ok, atom_ident} ->
         new_atom = {atom_ident, value}
 
         {:ok,
