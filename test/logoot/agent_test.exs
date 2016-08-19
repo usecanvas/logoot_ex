@@ -15,6 +15,20 @@ defmodule Logoot.AgentTest do
     assert is_binary(state.id)
   end
 
+  test ".delete_atom deletes an atom from the agent", %{agent: agent} do
+    agent_state = Logoot.Agent.tick_clock(agent)
+    {:ok, atom_ident} =
+      Sequence.gen_atom_ident(agent_state, Sequence.min, Sequence.max)
+    atom = {atom_ident, "Hello, World"}
+
+    {:ok, _sequence} =
+      Logoot.Agent.insert_atom(agent, atom)
+    Logoot.Agent.delete_atom(agent, atom)
+    state = Logoot.Agent.get_state(agent)
+
+    assert state.sequence == Sequence.empty_sequence
+  end
+
   test ".insert_atom inserts the atom into the agent", %{agent: agent} do
     agent_state = Logoot.Agent.tick_clock(agent)
     {:ok, atom_ident} =

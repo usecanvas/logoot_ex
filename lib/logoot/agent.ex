@@ -6,11 +6,13 @@ defmodule Logoot.Agent do
 
   use GenServer
 
-  defstruct id: "", clock: 0, sequence: Logoot.Sequence.empty_sequence
+  alias Logoot.Sequence
+
+  defstruct id: "", clock: 0, sequence: Sequence.empty_sequence
 
   @type t :: %__MODULE__{id: String.t,
                          clock: non_neg_integer,
-                         sequence: Logoot.Sequence.t}
+                         sequence: Sequence.t}
 
   # Client
 
@@ -35,11 +37,17 @@ defmodule Logoot.Agent do
   def tick_clock(pid), do: GenServer.call(pid, :tick_clock)
 
   @doc """
-  Insert an atom into the site's sequence.
+  Insert an atom into the agent's sequence.
   """
-  @spec insert_atom(pid, Logoot.Sequence.sequence_atom) ::
-    {:ok, Logoot.Sequence.t} | {:error, String.t}
+  @spec insert_atom(pid, Sequence.sequence_atom) ::
+    {:ok, Sequence.t} | {:error, String.t}
   def insert_atom(pid, atom), do: GenServer.call(pid, {:insert_atom, atom})
+
+  @doc """
+  Delete an atom from the agent's sequence.
+  """
+  @spec delete_atom(pid, Sequence.sequence_atom) :: Sequence.t
+  def delete_atom(pid, atom), do: GenServer.call(pid, {:delete_atom, atom})
 
   # Generate a unique agent ID.
   @spec gen_id :: String.t
@@ -56,11 +64,17 @@ defmodule Logoot.Agent do
   end
 
   def handle_call({:insert_atom, atom}, _from, agent) do
-    case Logoot.Sequence.insert_atom(agent.sequence, atom) do
+    case Sequence.insert_atom(agent.sequence, atom) do
       error = {:error, _} -> {:reply, error, agent}
       {:ok, sequence} ->
         {:reply, {:ok, sequence}, Map.put(agent, :sequence, sequence)}
     end
+  end
+
+  def handle_call({:delete_atom, atom}, _from, agent) do
+    sequence = Sequence.delete_atom(agent.sequence, atom)
+    agent = Map.put(agent, :sequence, sequence)
+    {:reply, sequence, agent}
   end
 
   def handle_call(:tick_clock, _from, agent) do
