@@ -1,11 +1,11 @@
 defmodule Logoot.Sequence do
   @moduledoc """
-  A sequence of atoms identified by `Logoot.position_ident`s.
+  A sequence of atoms identified by `Logoot.atom_ident`s.
   """
 
   @max_pos 32767
-  @abs_min_position_ident {[{0, 0}], 0}
-  @abs_max_position_ident {[{@max_pos, 0}], 1}
+  @abs_min_atom_ident {[{0, 0}], 0}
+  @abs_max_atom_ident {[{@max_pos, 0}], 1}
 
   @typedoc """
   The result of a comparison.
@@ -28,13 +28,13 @@ defmodule Logoot.Sequence do
   `^pos = [ident_1, ident_2, {int, ^s}]` is a position and `v` is the value of
   the vector clock of site `s`.
   """
-  @type position_ident :: {position, non_neg_integer}
+  @type atom_ident :: {position, non_neg_integer}
 
   @typedoc """
-  An item in a sequence represented by a tuple `{position_ident, data}` where
-  `position_ident` is a `position_ident` and `data` is any term.
+  An item in a sequence represented by a tuple `{atom_ident, data}` where
+  `atom_ident` is a `atom_ident` and `data` is any term.
   """
-  @type sequence_atom  :: {position_ident, term}
+  @type sequence_atom  :: {atom_ident, term}
 
   @typedoc """
   A sequence of `sequence_atoms` used to represent an ordered set.
@@ -55,34 +55,34 @@ defmodule Logoot.Sequence do
   @typedoc """
   A `sequence_atom` that represents the beginning of any `Logoot.Sequence.t`.
   """
-  @type abs_min_position_ident :: {[{0, 0}], 0}
+  @type abs_min_atom_ident :: {[{0, 0}], 0}
 
   @typedoc """
   A `sequence_atom` that represents the end of any `Logoot.Sequence.t`.
   """
-  @type abs_max_position_ident :: {[{32767, 0}], 1}
+  @type abs_max_atom_ident :: {[{32767, 0}], 1}
 
   @doc """
   Get the minimum sequence atom.
   """
-  @spec min :: abs_min_position_ident
-  def min, do: @abs_min_position_ident
+  @spec min :: abs_min_atom_ident
+  def min, do: @abs_min_atom_ident
 
   @doc """
   Get the maximum sequence atom.
   """
-  @spec max :: abs_max_position_ident
-  def max, do: @abs_max_position_ident
+  @spec max :: abs_max_atom_ident
+  def max, do: @abs_max_atom_ident
 
   @doc """
-  Compare two position idents.
+  Compare two atom identifiers.
 
   Returns `:gt` if first is greater than second, `:lt` if it is less, and `:eq`
   if they are equal.
   """
-  @spec compare_position_idents(position_ident, position_ident) :: comparison
-  def compare_position_idents(pos_ident_a, pos_ident_b) do
-    compare_positions(elem(pos_ident_a, 0), elem(pos_ident_b, 0))
+  @spec compare_atom_idents(atom_ident, atom_ident) :: comparison
+  def compare_atom_idents(atom_ident_a, atom_ident_b) do
+    compare_positions(elem(atom_ident_a, 0), elem(atom_ident_b, 0))
   end
 
   # Compare two positions.
@@ -100,15 +100,15 @@ defmodule Logoot.Sequence do
   end
 
   @doc """
-  Generate a position identifier between `min` and `max`.
+  Generate an atom identifier between `min` and `max`.
   """
-  @spec gen_position_ident(pid, position_ident, position_ident) ::
-        position_ident
-  def gen_position_ident(agent_pid, min_pos_ident, max_pos_ident) do
+  @spec gen_atom_ident(pid, atom_ident, atom_ident) ::
+        atom_ident
+  def gen_atom_ident(agent_pid, min_atom_ident, max_atom_ident) do
     agent = Logoot.Agent.tick_clock(agent_pid)
-    position_ident =
-      gen_position(agent.id, elem(min_pos_ident, 0), elem(max_pos_ident, 0))
-    {position_ident, agent.clock}
+    atom_ident =
+      gen_position(agent.id, elem(min_atom_ident, 0), elem(max_atom_ident, 0))
+    {atom_ident, agent.clock}
   end
 
   # Generate a position from an agent ID, min, and max
