@@ -77,6 +77,12 @@ defmodule Logoot.AgentTest do
     assert agent_a.sequence == agent_b.sequence
   end
 
+  test ".tick_clock increments agent's clock by 1", %{agent: agent} do
+    %{clock: initial_clock_value} = Logoot.Agent.get_state(agent)
+    %{clock: ticked_clock_value} = Logoot.Agent.tick_clock(agent)
+    assert ticked_clock_value == initial_clock_value + 1
+  end
+
   defp gen_rand_atom(agent_pid) do
     %{sequence: sequence} = Logoot.Agent.get_state(agent_pid)
     prev_atom_index = :rand.uniform(length(sequence) - 1) - 1
